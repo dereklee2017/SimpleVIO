@@ -97,7 +97,8 @@ class IMUFactor : public ceres::SizedCostFunction<15, 7, 9, 7, 9>
                 Eigen::Map<Eigen::Matrix<double, 15, 7, Eigen::RowMajor>> jacobian_pose_i(jacobians[0]);
                 jacobian_pose_i.setZero();
 
-                jacobian_pose_i.block<3, 3>(O_P, O_P) = -Qi.inverse().toRotationMatrix();
+                jacobian_pose_i.block<3, 3>(O_P, O_P) = -Eigen::Matrix3d::Identity();
+                // jacobian_pose_i.block<3, 3>(O_P, O_P) = -Qi.inverse().toRotationMatrix();
                 jacobian_pose_i.block<3, 3>(O_P, O_R) = Utility::skewSymmetric(Qi.inverse() * (0.5 * G * sum_dt * sum_dt + Pj - Pi - Vi * sum_dt));
 
 #if 0
@@ -152,7 +153,7 @@ class IMUFactor : public ceres::SizedCostFunction<15, 7, 9, 7, 9>
                 Eigen::Map<Eigen::Matrix<double, 15, 7, Eigen::RowMajor>> jacobian_pose_j(jacobians[2]);
                 jacobian_pose_j.setZero();
 
-                jacobian_pose_j.block<3, 3>(O_P, O_P) = Qi.inverse().toRotationMatrix();
+                jacobian_pose_j.block<3, 3>(O_P, O_P) = Qi.inverse().toRotationMatrix()*Qj.toRotationMatrix();
 
 #if 0
             jacobian_pose_j.block<3, 3>(O_R, O_R) = Eigen::Matrix3d::Identity();
